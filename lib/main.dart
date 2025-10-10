@@ -22,6 +22,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'sensor_capture',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.grey.shade50,
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 0,
+          shadowColor: Colors.black.withOpacity(0.1),
+        ),
+      ),
       home: const SensorCameraPage(),
     );
   }
@@ -221,7 +231,12 @@ class _SensorCameraPageState extends State<SensorCameraPage> {
 
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
     );
   }
 
@@ -260,11 +275,12 @@ class _SensorCameraPageState extends State<SensorCameraPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text("sensor_capture"),
+        title: const Text("sensor_capture", style: TextStyle(fontWeight: FontWeight.w600)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.folder_open),
+            icon: const Icon(Icons.folder_open_rounded),
             onPressed: _viewRecordings,
             tooltip: "View Recordings",
           ),
@@ -276,22 +292,66 @@ class _SensorCameraPageState extends State<SensorCameraPage> {
           children: [
             Row(
               children: [
-                const Text("Interval(ms): "),
+                const Text("Interval(ms): ", style: TextStyle(color: Colors.black)),
                 SizedBox(
                   width: 80,
-                  child: TextField(
-                    controller: _intervalController,
-                    keyboardType: TextInputType.number,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: _intervalController,
+                      keyboardType: TextInputType.number,
+                      style: const TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 20),
                 ElevatedButton(
                   onPressed: _isRecording ? null : _startRecording,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade600,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey.shade300,
+                    disabledForegroundColor: Colors.grey.shade600,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                    shadowColor: Colors.blue.withOpacity(0.3),
+                  ),
                   child: const Text("Start"),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: _isRecording ? _stopRecording : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey.shade600,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey.shade300,
+                    disabledForegroundColor: Colors.grey.shade500,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
                   child: const Text("Stop"),
                 ),
               ],
@@ -299,24 +359,38 @@ class _SensorCameraPageState extends State<SensorCameraPage> {
             const SizedBox(height: 20),
             if (_cameraController != null &&
                 _cameraController!.value.isInitialized)
-              SizedBox(height: 150, child: CameraPreview(_cameraController!)),
+              Container(
+                height: 150,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 15,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                clipBehavior: Clip.hardEdge,
+                child: CameraPreview(_cameraController!),
+              ),
             const SizedBox(height: 20),
             // センサーデータ表示
             Row(
               children: [
                 Expanded(
                   child: _buildSensorBox(
-                      "Accelerometer", _accX, _accY, _accZ, Colors.blue),
+                      "Accelerometer", _accX, _accY, _accZ, Colors.blue.shade700),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildSensorBox(
-                      "Gyroscope", _gyroX, _gyroY, _gyroZ, Colors.orange),
+                      "Gyroscope", _gyroX, _gyroY, _gyroZ, Colors.blue.shade600),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: _buildSensorBox(
-                      "Magnetometer", _magX, _magY, _magZ, Colors.purple),
+                      "Magnetometer", _magX, _magY, _magZ, Colors.blue.shade500),
                 ),
               ],
             ),
@@ -325,9 +399,15 @@ class _SensorCameraPageState extends State<SensorCameraPage> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: _isRecording ? Colors.red.shade50 : Colors.grey.shade100,
-                border: Border.all(
-                    color: _isRecording ? Colors.red : Colors.grey, width: 2),
+                color: _isRecording ? Colors.blue.shade50 : Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -336,7 +416,7 @@ class _SensorCameraPageState extends State<SensorCameraPage> {
                     _isRecording
                         ? Icons.fiber_manual_record
                         : Icons.stop_circle,
-                    color: _isRecording ? Colors.red : Colors.grey,
+                    color: _isRecording ? Colors.blue.shade700 : Colors.grey.shade600,
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -345,7 +425,7 @@ class _SensorCameraPageState extends State<SensorCameraPage> {
                         : "Stopped",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: _isRecording ? Colors.red : Colors.grey,
+                      color: _isRecording ? Colors.blue.shade700 : Colors.grey.shade700,
                     ),
                   ),
                 ],
@@ -355,13 +435,22 @@ class _SensorCameraPageState extends State<SensorCameraPage> {
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(8),
-                decoration:
-                BoxDecoration(border: Border.all(color: Colors.black)),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text("Log",
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
                     const SizedBox(height: 8),
                     Expanded(
                       child: ListView.builder(
@@ -369,7 +458,7 @@ class _SensorCameraPageState extends State<SensorCameraPage> {
                         itemBuilder: (context, index) {
                           return Text(
                             _logHistory[index],
-                            style: const TextStyle(fontSize: 11),
+                            style: TextStyle(fontSize: 11, color: Colors.grey.shade800),
                           );
                         },
                       ),
@@ -388,16 +477,26 @@ class _SensorCameraPageState extends State<SensorCameraPage> {
       String title, double x, double y, double z, Color color) {
     return Container(
       padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(border: Border.all(color: color, width: 2)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
         children: [
           Text(title,
               style: TextStyle(
                   fontWeight: FontWeight.bold, fontSize: 11, color: color)),
           const SizedBox(height: 4),
-          Text("X: ${x.toStringAsFixed(1)}", style: const TextStyle(fontSize: 10, color: Colors.red, fontWeight: FontWeight.bold)),
-          Text("Y: ${y.toStringAsFixed(1)}", style: const TextStyle(fontSize: 10, color: Colors.green, fontWeight: FontWeight.bold)),
-          Text("Z: ${z.toStringAsFixed(1)}", style: const TextStyle(fontSize: 10, color: Colors.blue, fontWeight: FontWeight.bold)),
+          Text("X: ${x.toStringAsFixed(1)}", style: const TextStyle(fontSize: 10, color: Colors.black, fontWeight: FontWeight.bold)),
+          Text("Y: ${y.toStringAsFixed(1)}", style: const TextStyle(fontSize: 10, color: Colors.black, fontWeight: FontWeight.bold)),
+          Text("Z: ${z.toStringAsFixed(1)}", style: const TextStyle(fontSize: 10, color: Colors.black, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -412,38 +511,55 @@ class RecordingsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text("Recordings"),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: folders.length,
-          itemBuilder: (context, index) {
-            final folder = folders[index];
-            final folderName = folder.path.split('/').last;
-            return ListTile(
-              leading: const Icon(Icons.folder),
-              title: Text(folderName),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        CsvViewerPage(folderPath: folder.path),
-                  ),
-                );
-              },
-            );
-          },
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      backgroundColor: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Recordings",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: folders.length,
+                itemBuilder: (context, index) {
+                  final folder = folders[index];
+                  final folderName = folder.path.split('/').last;
+                  return ListTile(
+                    leading: Icon(Icons.folder, color: Colors.blue.shade600),
+                    title: Text(folderName, style: const TextStyle(color: Colors.black)),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              CsvViewerPage(folderPath: folder.path),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Close", style: TextStyle(color: Colors.blue)),
+              ),
+            ),
+          ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text("Close"),
-        ),
-      ],
     );
   }
 }
@@ -508,8 +624,9 @@ class _CsvViewerPageState extends State<CsvViewerPage> {
     final folderName = widget.folderPath.split('/').last;
 
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text(folderName),
+        title: Text(folderName, style: const TextStyle(fontWeight: FontWeight.w600)),
         actions: [
           IconButton(
             icon: const Icon(Icons.share),
@@ -519,33 +636,52 @@ class _CsvViewerPageState extends State<CsvViewerPage> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: Colors.blue))
           : _csvData.isEmpty
-          ? const Center(child: Text("No CSV data found"))
+          ? const Center(child: Text("No CSV data found", style: TextStyle(color: Colors.black)))
           : SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: DataTable(
-            columns: _csvData[0]
-                .map((col) => DataColumn(
-                label: Text(col.toString(),
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12))))
-                .toList(),
-            rows: _csvData
-                .skip(1)
-                .map(
-                  (row) => DataRow(
-                cells: row
-                    .map((cell) => DataCell(Text(
-                    cell.toString(),
-                    style: const TextStyle(fontSize: 11))))
+          child: Container(
+            margin: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: DataTable(
+                headingRowColor: MaterialStateProperty.all(Colors.blue.shade50),
+                columns: _csvData[0]
+                    .map((col) => DataColumn(
+                    label: Text(col.toString(),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: Colors.black))))
+                    .toList(),
+                rows: _csvData
+                    .skip(1)
+                    .map(
+                      (row) => DataRow(
+                    cells: row
+                        .map((cell) => DataCell(Text(
+                        cell.toString(),
+                        style: const TextStyle(fontSize: 11, color: Colors.black))))
+                        .toList(),
+                  ),
+                )
                     .toList(),
               ),
-            )
-                .toList(),
+            ),
           ),
         ),
       ),
